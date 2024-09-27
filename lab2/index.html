@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Завантаження файлу</title>
+</head>
+<body>
+
+    <h2>Завантажити файл</h2>
+    <form action="process.php" method="POST" enctype="multipart/form-data">
+        <label for="file">Виберіть файл:</label>
+        <input type="file" name="file" id="file" accept=".png, .jpg, .jpeg">
+        <button type="submit">Завантажити</button>
+    </form>
+
+    <h2>Записати текст у файл</h2>
+    <form action="text.php" method="POST">
+        <label for="text">Введіть текст:</label>
+        <textarea name="text" id="text" rows="4" cols="50"></textarea>
+        <button type="submit">Записати</button>
+    </form>
+
+</body>
+</html>
