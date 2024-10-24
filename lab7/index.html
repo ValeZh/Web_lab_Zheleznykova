@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Головна сторінка</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Вітаємо на нашому сайті</h1>
+        <button id="loginBtn">Увійти</button>
+        <button id="registerBtn">Зареєструватися</button>
+    </div>
+
+    <!-- Форма входа -->
+    <form id="loginFormElement" class="form-container hidden">
+        <h2>Вхід</h2>
+        <input type="email" id="loginEmail" name="email" placeholder="Електронна пошта" required>
+        <input type="password" id="loginPassword" name="password" placeholder="Пароль" required>
+        <button type="submit" id="loginSubmit">Увійти</button>
+        <div id="loginError" class="error"></div>
+    </form>
+
+    <!-- Форма регистрации -->
+    <form id="registerFormElement" class="form-container hidden">
+        <h2>Реєстрація</h2>
+        <input type="text" id="username" name="username" placeholder="Ім'я користувача" required>
+        <input type="email" id="registerEmail" name="email" placeholder="Електронна пошта" required>
+        <input type="password" id="registerPassword" name="password" placeholder="Пароль" required>
+        <input type="password" id="confirmPassword" name="confirm_password" placeholder="Підтвердження пароля" required>
+        <button type="submit" id="registerSubmit">Зареєструватися</button>
+        <div id="registerError" class="error"></div>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
