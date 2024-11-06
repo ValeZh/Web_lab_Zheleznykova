@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Оформлення замовлення</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Оформлення замовлення</h1>
+    <form id="order-form">
+        <label for="order-number">Номер замовлення:</label>
+        <input type="text" id="order-number" name="order-number" required><br><br>
+
+        <label for="weight">Вага замовлення (кг):</label>
+        <input type="number" id="weight" name="weight" required><br><br>
+
+        <label for="city">Місто:</label>
+        <select id="city" name="city" required></select><br><br>
+
+        <label for="branch">Вибір відділення або поштамата:</label>
+        <select id="branch" name="branch" required></select><br><br>
+
+        <button type="submit">Оформити замовлення</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            // Завантаження списку міст із бази даних
+            $.ajax({
+                url: "load_cities.php",
+                type: "GET",
+                success: function(response) {
+                    response.forEach(function(city) {
+                        $('#city').append(`<option value="${city.Description}">${city.Description}</option>`);
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log("AJAX Error:", textStatus, errorThrown);
+                }
+            });
+
+            // Завантаження варіантів відділень або поштоматів при зміні міста або типу доставки
+            $('#city').change(function() {
+    let city = $('#city').val();
+    let modelName = 'AddressGeneral';
+    let method = 'getWarehouses';
+   
+    $.ajax({
+        url: "novaposhta_api.php",
+        type: "POST",
+        data: JSON.stringify({
+            model: modelName,
+            method: method,
+            properties: {
+                "CityName": city,
+
+            }
+        }),
+        contentType: "application/json",
+        success: function(response) {
+            $('#branch').empty();
+            let options = response.data;
+            options.forEach(function(option) {
+                $('#branch').append(`<option value="${option.Description}">${option.Description}</option>`);
+            });
+        }
+    });
+});
+            // Обробка відправки форми
+            $('#order-form').submit(function(event) {
+    event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+    let city = $('#city').val();
+    let placeName = $('#branch').val();
+    let modelName = 'AddressGeneral';
+    let method = 'getWarehouses';
+    let weight = parseFloat($('#weight').val()); // Приводим значение веса к числу
+    let maxMass;
+
+    // AJAX-запрос для получения maxMass
+    $.ajax({
+        url: "novaposhta_api.php",
+        type: "POST",
+        data: JSON.stringify({
+            model: modelName,
+            method: method,
+            properties: {
+                "CityName": city,
+                "FindByString": placeName
+            }
+        }),
+        contentType: "application/json",
+        success: function(response) {
+            let options = response.data;
+
+            options.forEach(function(option) {
+                maxMass = parseFloat(option.PlaceMaxWeightAllowed); // Приводим maxMass к числу
+            });
+
+            // Вывод maxMass в консоль для отладки
+            console.log("Max Mass для выбранного отделения:", maxMass);
+
+            // Проверка, что maxMass определен и сравнение корректно работает
+            if (!isNaN(maxMass)) {
+                alert(`Максимально допустимая масса для выбранного отделения: ${maxMass} кг`);
+
+                if (weight > maxMass) {
+                    alert('Занадто велика вага');
+                } else {
+                    // Если вес в пределах допустимого, отправляем данные формы
+                    let formData = $('#order-form').serialize();
+                    $.ajax({
+                        url: "save_order.php",
+                        type: "POST",
+                        data: formData,
+                        success: function(response) {
+                            alert('Замовлення успішно збережено!');
+                        },
+                        error: function() {
+                            alert('Помилка збереження замовлення.');
+                        }
+                    });
+                }
+            } else {
+                alert('Не вдалося отримати максимальну вагу для обраного відділення.');
+            }
+        },
+        error: function() {
+            alert('Помилка завантаження даних відділення.');
+        }
+    });
+});
+        });
+    </script>
+</body>
+</html>
